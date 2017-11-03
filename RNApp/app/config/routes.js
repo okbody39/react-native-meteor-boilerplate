@@ -1,15 +1,14 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
-import { Image } from 'react-native';
 import { StackNavigator, TabNavigator } from 'react-navigation';
 
 import Home from '../screens/Home';
 import Details from '../screens/Details';
 import Profile from '../screens/Profile';
 import SignIn from '../screens/SignIn';
+import Cards from '../screens/Cards';
+import Chat from '../screens/Chat';
 
-import homeIcon from '../images/home-icon.png';
-import profileIcon from '../images/user-icon.png';
+import { Button, Text, Icon, Footer, FooterTab } from "native-base";
 
 export const AuthStack = StackNavigator({
   SignIn: {
@@ -19,59 +18,51 @@ export const AuthStack = StackNavigator({
   headerMode: 'none',
 });
 
-export const HomeStack = StackNavigator({
-  Home: {
-    screen: Home,
-    navigationOptions: {
-      headerTitle: 'Home',
-    },
+export const AppNavigator = TabNavigator(
+  {
+    Home: { screen: Home },
+    Cards: { screen: Cards },
+    Details: { screen: Details },
+    Chat: { screen: Chat },
   },
-  Details: {
-    screen: Details,
-    navigationOptions: {
-      headerTitle: 'Details',
-    },
-  },
-});
-
-export const ProfileStack = StackNavigator({
-  Profile: {
-    screen: Profile,
-  },
-}, {
-  headerMode: 'none',
-});
-
-const styles = {
-  icon: {
-    height: 30,
-    width: 30,
-  },
-};
-
-export const Tabs = TabNavigator({
-  Home: {
-    screen: HomeStack,
-    navigationOptions: {
-      tabBarLabel: 'Home',
-      tabBarIcon: ({ tintColor }) => (
-        <Image
-          style={[styles.icon, { tintColor }]}
-          source={homeIcon}
-        />
-      ),
-    },
-  },
-  Profile: {
-    screen: ProfileStack,
-    navigationOptions: {
-      tabBarLabel: 'Profile',
-      tabBarIcon: ({ tintColor }) => (
-        <Image
-          style={[styles.icon, { tintColor }]}
-          source={profileIcon}
-        />
-      ),
-    },
-  },
-});
+  {
+    swipeEnabled: false,
+    tabBarPosition: "bottom",
+    tabBarComponent: props => {
+      return (
+        <Footer>
+          <FooterTab>
+            <Button
+              vertical
+              active={props.navigationState.index === 0}
+              onPress={() => props.navigation.navigate("Home")}>
+              <Icon name="bowtie" />
+              <Text>Home</Text>
+            </Button>
+            <Button
+              vertical
+              active={props.navigationState.index === 1}
+              onPress={() => props.navigation.navigate("Cards")}>
+              <Icon name="heart" />
+              <Text>Card</Text>
+            </Button>
+            <Button
+              vertical
+              active={props.navigationState.index === 2}
+              onPress={() => props.navigation.navigate("Details")}>
+              <Icon name="briefcase" />
+              <Text>Details</Text>
+            </Button>
+            <Button
+              vertical
+              active={props.navigationState.index === 3}
+              onPress={() => props.navigation.navigate("Chat")}>
+              <Icon name="headset" />
+              <Text>Chat</Text>
+            </Button>
+          </FooterTab>
+        </Footer>
+      );
+    }
+  }
+);

@@ -1,27 +1,45 @@
 import React from 'react';
 import Meteor, { createContainer } from 'react-native-meteor';
+import { Root, StyleProvider, Spinner } from 'native-base';
+import getTheme from '../native-base-theme/components';
+import material from './theme/base-theme';
 
-import { AuthStack, Tabs } from './config/routes';
+import { AuthStack, AppNavigator } from './config/routes';
 import Loading from './components/Loading';
 import settings from './config/settings';
+import PropTypes from 'prop-types';
 
 Meteor.connect(settings.METEOR_URL);
 
 const RNApp = (props) => {
   const { status, user, loggingIn } = props;
 
+  let userInfo = Meteor.user();
+
   if (status.connected === false || loggingIn) {
     return <Loading />;
-  } else if (user !== null) {
-    return <Tabs />;
+  } else if (userInfo !== null) {
+    return (
+      <Root>
+        <StyleProvider style={getTheme(material)}>
+          <AppNavigator />
+        </StyleProvider>
+      </Root>
+    );
   }
-  return <AuthStack />;
+  return (
+    <Root>
+      <StyleProvider style={getTheme(material)}>
+        <AuthStack />
+      </StyleProvider>
+    </Root>
+  );
 };
 
 RNApp.propTypes = {
-  status: React.PropTypes.object,
-  user: React.PropTypes.object,
-  loggingIn: React.PropTypes.bool,
+  status: PropTypes.object,
+  user: PropTypes.object,
+  loggingIn: PropTypes.bool,
 };
 
 export default createContainer(() => {

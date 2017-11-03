@@ -7,7 +7,7 @@ import Button from '../components/Button';
 import Avatar from '../components/Avatar';
 import { capitalize } from '../lib/string';
 import headerImage from '../images/header-image.png';
-
+import PropTypes from 'prop-types';
 const window = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
@@ -51,7 +51,7 @@ class Profile extends Component {
 }
 
 Profile.propTypes = {
-  user: React.PropTypes.object,
+  user: PropTypes.object,
 };
 
 export default createContainer(() => {

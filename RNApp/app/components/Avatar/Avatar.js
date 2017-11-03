@@ -4,7 +4,7 @@ import gravatar from 'gravatar-api';
 
 import styles from './styles';
 import avatarImage from '../../images/avatar-placeholder.png';
-
+import PropTypes from 'prop-types';
 const Avatar = (props) => {
   const gravatarOptions = {
     email: props.email,
@@ -22,7 +22,7 @@ const Avatar = (props) => {
 };
 
 Avatar.propTypes = {
-  email: React.PropTypes.string,
+  email: PropTypes.string,
 };
 
 export default Avatar;

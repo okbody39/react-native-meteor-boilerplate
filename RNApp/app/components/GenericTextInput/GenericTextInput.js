@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, TextInput } from 'react-native';
 import styles from './styles';
-
+import PropTypes from 'prop-types';
 const GenericTextInput = (props) => {
   return (
     <View>
@@ -17,7 +17,7 @@ const GenericTextInput = (props) => {
 };
 
 GenericTextInput.propTypes = {
-  borderTop: React.PropTypes.bool,
+  borderTop: PropTypes.bool,
 };
 
 export default GenericTextInput;

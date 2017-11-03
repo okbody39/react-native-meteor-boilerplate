@@ -1,65 +1,108 @@
-import React, { PropTypes } from 'react';
-import { StyleSheet, Dimensions, Text, View, ScrollView } from 'react-native';
-import Meteor, { createContainer } from 'react-native-meteor';
-
-import Loading from '../components/Loading';
+import React, { Component } from 'react';
+import { ListView, StyleSheet } from 'react-native';
+import {
+  Container, Header, Button, Content, Left, Right, Icon, Body, Title, Text,
+  Form, Item, Input, Label, Toast, Footer, List, ListItem, Spinner,
+} from 'native-base';
+import PropTypes from 'prop-types';
+import Meteor, { Accounts, connectMeteor } from 'react-native-meteor';
 import { colors } from '../config/styles';
-
-const window = Dimensions.get('window');
-const MARGIN_HORIZONTAL = 10;
-const cardSize = window.width - (MARGIN_HORIZONTAL * 2);
-
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: colors.background,
-  },
-  list: {},
-  item: {
-    backgroundColor: colors.buttonBackground,
-    width: cardSize,
-    height: cardSize / 2,
-    marginHorizontal: MARGIN_HORIZONTAL,
-    marginVertical: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  itemText: {
-    fontSize: 16,
-    fontWeight: '500',
-    textAlign: 'center',
-    color: colors.buttonText,
   },
 });
 
-const Details = ({ detailsReady, details }) => {
-  if (!detailsReady) {
-    return <Loading />;
+@connectMeteor
+class Details extends Component {
+
+  getMeteorData() {
+    const handle = Meteor.subscribe('details-list');
+
+    return {
+      detailsReady: handle.ready(),
+      details: Meteor.collection('details').find() || [],
+    };
   }
 
-  return (
-    <View style={styles.container}>
-      <ScrollView>
-        {details.map((detail) => (
-          <View style={styles.item} key={detail._id}>
-            <Text style={styles.itemText}>{detail.name}</Text>
-          </View>
-        ))}
-      </ScrollView>
-    </View>
-  );
-};
+  constructor(props) {
+    super(props);
 
-Details.propTypes = {
-  detailsReady: PropTypes.bool,
-  details: PropTypes.array,
-};
+    this.mounted = false;
+    this.ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
+    this.state = {
+      basic: true,
+      // listViewData: [],
+    };
+  }
 
-export default createContainer(() => {
-  const handle = Meteor.subscribe('details-list');
+  componentWillMount() {
+    this.mounted = true;
+  }
 
-  return {
-    detailsReady: handle.ready(),
-    details: Meteor.collection('details').find() || [],
-  };
-}, Details);
+  componentWillUnmount() {
+    this.mounted = false;
+  }
+
+  componentDidMount() {
+    // const {detailsReady, details} = this.data;
+    //
+    // if (detailsReady) {
+    //   this.setState({listViewData: details});
+    // }
+  }
+
+  // deleteRow(secId, rowId, rowMap) {
+  //   rowMap[`${secId}${rowId}`].props.closeRow();
+  //   const newData = [...this.state.listViewData];
+  //   newData.splice(rowId, 1);
+  //   this.setState({ listViewData: newData });
+  // }
+
+  render() {
+    const {detailsReady, details} = this.data;
+
+    if (!detailsReady) {
+      return <Spinner />;
+    }
+
+    return (
+      <Container style={styles.container}>
+        <Header>
+          <Left>
+            <Button transparent onPress={() => this.props.navigation.goBack()}>
+              <Icon name="menu" />
+            </Button>
+          </Left>
+          <Body>
+          <Title>Details</Title>
+          </Body>
+          <Right />
+        </Header>
+
+        <Content>
+          <List
+            dataSource={this.ds.cloneWithRows(details)}
+            renderRow={data =>
+              <ListItem>
+                <Text> {data.name} </Text>
+              </ListItem>}
+            renderLeftHiddenRow={data =>
+              <Button full onPress={() => alert(data.name)}>
+                <Icon active name="information-circle" />
+              </Button>}
+            renderRightHiddenRow={(data, secId, rowId, rowMap) =>
+              <Button full danger onPress={_ => console.log(secId, rowId, rowMap)}>
+                <Icon active name="trash" />
+              </Button>}
+            leftOpenValue={75}
+            rightOpenValue={-75}
+          />
+        </Content>
+
+      </Container>
+    );
+  }
+}
+// connectMeteor(Details);
+export default Details;
